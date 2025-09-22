@@ -14,6 +14,7 @@
 #include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QSlider>
 #include <QtWidgets/QSpinBox>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -21,8 +22,9 @@ QT_BEGIN_NAMESPACE
 class Ui_Widget
 {
 public:
-    QSpinBox *spinBox;
+    QVBoxLayout *verticalLayout;
     QSlider *horizontalSlider;
+    QSpinBox *spinBox;
     QLCDNumber *lcdNumber;
 
     void setupUi(QWidget *Widget)
@@ -30,17 +32,36 @@ public:
         if (Widget->objectName().isEmpty())
             Widget->setObjectName("Widget");
         Widget->resize(800, 600);
-        spinBox = new QSpinBox(Widget);
-        spinBox->setObjectName("spinBox");
-        spinBox->setGeometry(QRect(180, 110, 42, 22));
-        spinBox->setMinimumSize(QSize(42, 0));
+        verticalLayout = new QVBoxLayout(Widget);
+        verticalLayout->setObjectName("verticalLayout");
         horizontalSlider = new QSlider(Widget);
         horizontalSlider->setObjectName("horizontalSlider");
-        horizontalSlider->setGeometry(QRect(280, 110, 160, 22));
+        horizontalSlider->setMinimum(-100);
+        horizontalSlider->setMaximum(100);
         horizontalSlider->setOrientation(Qt::Orientation::Horizontal);
+
+        verticalLayout->addWidget(horizontalSlider);
+
+        spinBox = new QSpinBox(Widget);
+        spinBox->setObjectName("spinBox");
+        QSizePolicy sizePolicy(QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(spinBox->sizePolicy().hasHeightForWidth());
+        spinBox->setSizePolicy(sizePolicy);
+        spinBox->setMinimumSize(QSize(42, 0));
+        spinBox->setSizeIncrement(QSize(0, 0));
+        spinBox->setMinimum(-100);
+        spinBox->setMaximum(100);
+        spinBox->setSingleStep(1);
+
+        verticalLayout->addWidget(spinBox);
+
         lcdNumber = new QLCDNumber(Widget);
         lcdNumber->setObjectName("lcdNumber");
-        lcdNumber->setGeometry(QRect(170, 160, 64, 23));
+
+        verticalLayout->addWidget(lcdNumber);
+
 
         retranslateUi(Widget);
         QObject::connect(spinBox, &QSpinBox::valueChanged, horizontalSlider, &QSlider::setValue);
